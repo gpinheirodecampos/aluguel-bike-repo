@@ -7,9 +7,9 @@ import { BikeNotFoundError } from "../src/errors/bike-not-found-error"
 import { UnavailableBikeError } from "../src/errors/unavailable-bike-error"
 import { UserNotFoundError } from "../src/errors/user-not-found-error"
 import { DuplicateUserError } from "../src/errors/duplicate-user-error"
-import { FakeUserRepo } from "./doubles/fake-user-repo"
-import { FakeBikeRepo } from "./doubles/fake-bike-repo"
-import { FakeRentRepo } from "./doubles/fake-rent-repo"
+import { MySqlUserRepo } from "./doubles/mysql-user-repo"
+import { MySqlBikeRepo } from "./doubles/mysql-bike-repo"
+import { MySqlRentRepo } from "./doubles/mysql-rent-repo"
 import { UserRepo } from "../src/ports/user-repo"
 import { BikeRepo } from "../src/ports/bike-repo"
 import { RentRepo } from "../src/ports/rent-repo"
@@ -22,9 +22,9 @@ let rentRepo: RentRepo
 
 describe('App', () => {
     beforeEach(() => {
-        userRepo = new FakeUserRepo()
-        bikeRepo = new FakeBikeRepo()
-        rentRepo = new FakeRentRepo()
+        userRepo = new MySqlUserRepo()
+        bikeRepo = new MySqlBikeRepo()
+        rentRepo = new MySqlRentRepo()
     })
 
     it('should correctly calculate the rent amount', async () => {
@@ -67,7 +67,7 @@ describe('App', () => {
             1234, 1234, 100.0, 'My bike', 5, [])
         await app.registerBike(bike)
         await app.rentBike(bike.id, user.email)
-        const appRentRepo = (app.rentRepo as FakeRentRepo)
+        const appRentRepo = (app.rentRepo as MySqlRentRepo)
         expect(appRentRepo.rents.length).toEqual(1)
         expect(appRentRepo.rents[0].bike.id).toEqual(bike.id)
         expect(appRentRepo.rents[0].user.email).toEqual(user.email)
