@@ -11,7 +11,8 @@ export class Bike {
         public ratings: number,
         public imageUrls: string[],
         public available: boolean = true,
-        public location: Location = new Location(0.0, 0.0),
-        public id?: string
+        public latitude: number,
+        public longitude: number,
+        public id?: number
     ) {}
 }

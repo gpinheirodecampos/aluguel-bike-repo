@@ -1,9 +1,9 @@
 import { Bike } from "../bike"
 
 export interface BikeRepo {
-    find(id: string): Promise<Bike>
-    add(bike: Bike): Promise<string>
-    remove(id: string): Promise<void>
-    update(id: string, bike: Bike): Promise<void>
-    list(): Promise<Bike[]>
+    find(id: number): Promise<Boolean>
+    insert(bike: Bike): Promise<Boolean>
+    remove(id: number): Promise<Boolean>
+    update(id: number, bike: Bike): Promise<Boolean>
+    list(): Promise<void>
 }
