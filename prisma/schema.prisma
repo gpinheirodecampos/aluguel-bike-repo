@@ -14,7 +14,7 @@ model Imagem {
   id     Int    @id @default(autoincrement())
   url    String @unique
   bikes  Bike   @relation(fields: [bikeId], references: [id])
-  bikeId Int
+  bikeId Int    @unique
 }
 
 model Bike {
@@ -39,12 +39,16 @@ model User {
   email    String @unique
   password String
   rents    Rent[]
+
+  @@index([email])
 }
 
 model Rent {
-  id     Int  @id @default(autoincrement())
-  bikes  Bike @relation(fields: [bikeId], references: [id])
-  bikeId Int
-  users  User @relation(fields: [userId], references: [id])
-  userId Int
+  id     Int       @id @default(autoincrement())
+  end    DateTime?
+  start  DateTime  @default(now())
+  bikes  Bike      @relation(fields: [bikeId], references: [id])
+  bikeId Int       @unique
+  users  User      @relation(fields: [userId], references: [id])
+  userId Int       @unique
 }
