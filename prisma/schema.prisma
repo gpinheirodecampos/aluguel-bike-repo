@@ -26,7 +26,7 @@ model Bike {
   rate        Int
   description String
   ratings     Int
-  avaible     Boolean  @default(true)
+  avaible     Boolean? @default(true)
   latitude    Float
   longitude   Float
   imageUrl    Imagem[]
@@ -46,7 +46,7 @@ model User {
 model Rent {
   id     Int       @id @default(autoincrement())
   end    DateTime?
-  start  DateTime  @default(now())
+  start  DateTime? @default(now())
   bikes  Bike      @relation(fields: [bikeId], references: [id])
   bikeId Int       @unique
   users  User      @relation(fields: [userId], references: [id])
