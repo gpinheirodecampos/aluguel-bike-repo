@@ -1,16 +1,15 @@
-import { Bike } from "./bike";
-import { Crypt } from "./crypt";
-import { Rent } from "./rent";
-import { User } from "./user";
-import { Location } from "./location";
+import { Bike } from "@prisma/client";
+import { Rent } from "@prisma/client";
+import { User } from "@prisma/client";
+import { RentRepo } from "./ports/rent-repo";
+import { UserRepo } from "./ports/user-repo";
+import { BikeRepo } from "./ports/bike-repo";
 import { BikeNotFoundError } from "./errors/bike-not-found-error";
 import { UnavailableBikeError } from "./errors/unavailable-bike-error";
 import { UserNotFoundError } from "./errors/user-not-found-error";
 import { DuplicateUserError } from "./errors/duplicate-user-error";
-import { RentRepo } from "./ports/rent-repo";
-import { UserRepo } from "./ports/user-repo";
-import { BikeRepo } from "./ports/bike-repo";
 import { UserHasOpenRentError } from "./errors/user-has-open-rent-error";
+import { Crypt } from "./crypt";
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
@@ -55,7 +54,7 @@ export class App {
         await this.userRepo.remove(email)
     }
     
-    async rentBike(bikeId: string, userEmail: string): Promise<string> {
+    async rentBike(bikeId: number, userEmail: string): Promise<string> {
         const bike = await this.findBike(bikeId)
         if (!bike.available) {
             throw new UnavailableBikeError()
@@ -67,7 +66,7 @@ export class App {
         return await this.rentRepo.add(newRent)
     }
 
-    async returnBike(bikeId: string, userEmail: string): Promise<number> {
+    async returnBike(bikeId: number, userEmail: string): Promise<number> {
         const now = new Date()
         const rent = await this.rentRepo.findOpen(bikeId, userEmail)
         if (!rent) throw new Error('Rent not found.')
@@ -87,14 +86,14 @@ export class App {
         return await this.bikeRepo.list()
     }
 
-    async moveBikeTo(bikeId: string, location: Location) {
+    async moveBikeTo(bikeId: number, location: Location) {
         const bike = await this.findBike(bikeId)
         bike.location.latitude = location.latitude
         bike.location.longitude = location.longitude
         await this.bikeRepo.update(bikeId, bike)
     }
 
-    async findBike(bikeId: string): Promise<Bike> {
+    async findBike(bikeId: number): Promise<Bike> {
         const bike = await this.bikeRepo.find(bikeId)
         if (!bike) throw new BikeNotFoundError()
         return bike

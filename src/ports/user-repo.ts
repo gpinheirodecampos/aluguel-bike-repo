@@ -1,8 +1,8 @@
-import { User } from "../user";
+import { User } from "@prisma/client"
 
 export interface UserRepo {
     find(email: string): Promise<User>
-    insert(user: User): Promise<number>
-    remove(email: string): Promise<void>
+    create(user: User): Promise<number>
+    delete(email: string): Promise<void>
     list(): Promise<User[]>
 }
