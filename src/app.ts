@@ -13,6 +13,7 @@ import { Crypt } from "./crypt";
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
+
 export class App {
     crypt: Crypt = new Crypt()
 
@@ -28,13 +29,13 @@ export class App {
         return user
     }
 
-    async registerUser(user: User): Promise<string> {
+    async registerUser(user: User): Promise<number> {
         if (await this.userRepo.find(user.email)) {
           throw new DuplicateUserError()
         }
         const encryptedPassword = await this.crypt.encrypt(user.password)
         user.password = encryptedPassword
-        return await this.userRepo.add(user)
+        return await this.userRepo.create(user)
     }
 
     async authenticate(userEmail: string, password: string): Promise<boolean> {
@@ -42,19 +43,19 @@ export class App {
         return await this.crypt.compare(password, user.password)
     }
 
-    async registerBike(bike: Bike): Promise<string> {
-        return await this.bikeRepo.add(bike)
+    async registerBike(bike: Bike): Promise<Bike> {
+        return await this.bikeRepo.create(bike)
     }
 
     async removeUser(email: string): Promise<void> {
         await this.findUser(email)
-        if ((await this.rentRepo.findOpenFor(email)).length > 0) {
+        if ((await this.rentRepo.findOpenFor(email))) {
             throw new UserHasOpenRentError()
         }
-        await this.userRepo.remove(email)
+        await this.userRepo.delete(email)
     }
     
-    async rentBike(bikeId: number, userEmail: string): Promise<string> {
+    async rentBike(bikeId: number, userEmail: string): Promise<number> {
         const bike = await this.findBike(bikeId)
         if (!bike.available) {
             throw new UnavailableBikeError()
@@ -62,8 +63,8 @@ export class App {
         const user = await this.findUser(userEmail)
         bike.available = false
         await this.bikeRepo.update(bikeId, bike)
-        const newRent = new Rent(bike, user, new Date())
-        return await this.rentRepo.add(newRent)
+        // const newRent = new Rent(bike, user, new Date())
+        return await this.rentRepo.create(bike, user)
     }
 
     async returnBike(bikeId: number, userEmail: string): Promise<number> {
@@ -72,10 +73,11 @@ export class App {
         if (!rent) throw new Error('Rent not found.')
         rent.end = now
         await this.rentRepo.update(rent.id, rent)
-        rent.bike.available = true
-        await this.bikeRepo.update(rent.bike.id, rent.bike)
+        const bike = await this.findBike(bikeId)
+        bike.available = true
+        await this.bikeRepo.update(bike.id, bike)
         const hours = diffHours(rent.end, rent.start)
-        return hours * rent.bike.rate
+        return hours * bike.rate
     }
 
     async listUsers(): Promise<User[]> {
@@ -86,10 +88,10 @@ export class App {
         return await this.bikeRepo.list()
     }
 
-    async moveBikeTo(bikeId: number, location: Location) {
+    async moveBikeTo(bikeId: number, latitude: number, longitude: number) {
         const bike = await this.findBike(bikeId)
-        bike.location.latitude = location.latitude
-        bike.location.longitude = location.longitude
+        bike.latitude = latitude
+        bike.longitude = longitude
         await this.bikeRepo.update(bikeId, bike)
     }
 
