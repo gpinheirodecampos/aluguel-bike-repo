@@ -5,24 +5,30 @@ import { User } from "@prisma/client";
 import { MySqlUserRepo } from "../test/doubles/mysql-user-repo";
 import { MySqlRentRepo } from "../test/doubles/mysql-rent-repo";
 import { MySqlBikeRepo } from "../test/doubles/mysql-bike-repo";
+import prisma from "./prisma";
 const userRepo = new MySqlUserRepo();
 const rentRepo = new MySqlRentRepo();
 const bikeRepo = new MySqlBikeRepo();
 
 async function main() {
     const app = new App(userRepo, bikeRepo, rentRepo)
-    
+    // const deleteProfile = prisma.user.deleteMany()
+    // const deleteBike = prisma.bike.deleteMany()
+    // const deleteRent = prisma.rent.deleteMany()
+
+    // await prisma.$transaction([deleteProfile, deleteRent, deleteBike])
     const users = gerarUsuarios()
-    users.forEach(user => {
-        app.registerUser(user)
-    });
+    //  users.forEach(user => {
+    //      app.registerUser(user)
+    //  });
 
     const bikes = gerarBikes()
-    bikes.forEach(bike => {
-        app.registerBike(bike)
-    });
+    // bikes.forEach(bike => {
+    //     app.registerBike(bike)
+    // });
+    app.rentBike(bikes[0].id, users[0].email)
 
-    //app.rentBike(bikes[0].id, users[0].email)
+    // console.log(users[0].email)
 }
 
 function gerarUsuarios() {
@@ -37,10 +43,10 @@ function gerarUsuarios() {
 
 function gerarBikes() {
     const bikes: Bike[] = [
-        {name: "caloi", type: "nova", bodySize: 1, maxLoad: 1, rate: 1, description: "", ratings: 1, latitude: 1, longitude: 2, id: 1, avaible: true},
-        {name: "focus", type: "nova", bodySize: 1, maxLoad: 1, rate: 1, description: "", ratings: 1, latitude: 1, longitude: 2, id: 2, avaible: true},
-        {name: "giant", type: "usada", bodySize: 1, maxLoad: 1, rate: 1, description: "", ratings: 1, latitude: 1, longitude: 2, id: 3, avaible: true},
-        {name: "sense", type: "usada", bodySize: 1, maxLoad: 1, rate: 1, description: "", ratings: 1, latitude: 1, longitude: 2, id: 4, avaible: true}
+        {name: "caloi", type: "nova", bodySize: 1, maxLoad: 1, rate: 1, description: "", ratings: 1, latitude: 1, longitude: 2, id: 1, available: true},
+        {name: "focus", type: "nova", bodySize: 1, maxLoad: 1, rate: 1, description: "", ratings: 1, latitude: 1, longitude: 2, id: 2, available: true},
+        {name: "giant", type: "usada", bodySize: 1, maxLoad: 1, rate: 1, description: "", ratings: 1, latitude: 1, longitude: 2, id: 3, available: true},
+        {name: "sense", type: "usada", bodySize: 1, maxLoad: 1, rate: 1, description: "", ratings: 1, latitude: 1, longitude: 2, id: 4, available: true}
     ]
     return bikes
 }

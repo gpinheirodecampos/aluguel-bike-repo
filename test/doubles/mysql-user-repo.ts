@@ -5,6 +5,7 @@ import prisma from "../../src/prisma"
 export class MySqlUserRepo implements UserRepo {
 	async create(user: User): Promise<number> {
 		const newUser = await prisma.user.create({ data: user })
+		await prisma.$transaction
 		return newUser.id
 	}
 
@@ -12,8 +13,10 @@ export class MySqlUserRepo implements UserRepo {
 		return await prisma.user.findUnique({ where: { email: email } })
 	}
 
-	async delete(email: string): Promise<void> {
-		await prisma.user.delete({ where: { email: email } })
+	async delete(email: string): Promise<Boolean> {
+		const deleted = await prisma.user.delete({ where: { email: email } })
+		if (deleted) return true
+		else return false
 	}
 
 	async list(): Promise<User[]> {

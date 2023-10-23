@@ -2,7 +2,7 @@ import { Bike } from "@prisma/client"
 
 export interface BikeRepo {
     find(id: number): Promise<Bike>
-    create(bike: Bike): Promise<Boolean>
+    create(bike: Bike): Promise<Bike>
     delete(id: number): Promise<Boolean>
     update(id: number, bike: Bike): Promise<Boolean>
     list(): Promise<Bike[]>

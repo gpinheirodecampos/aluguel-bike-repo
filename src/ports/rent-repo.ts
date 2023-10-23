@@ -1,8 +1,10 @@
 import { Rent } from "@prisma/client"
+import { User } from "@prisma/client"
+import { Bike } from "@prisma/client"
 
 export interface RentRepo {
-    create(rent: Rent): Promise<Rent>
-    findOpen(bikeId: number, userEmail: string): Promise<number>
+    create(bike: Bike, user: User): Promise<number>
+    findOpen(bikeId: number, userEmail: string): Promise<Rent>
     findOpenFor(userEmail: string): Promise<Boolean>
     update(id: number, rent: Rent): Promise<void>
 }

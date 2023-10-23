@@ -5,16 +5,13 @@ import prisma from "../../src/prisma"
 export class MySqlBikeRepo implements BikeRepo {
 	async find(id: number): Promise<Bike> {
 		const bike = await prisma.bike.findUnique({ where: { id: id } })
-
 		return bike
 	}
 
-	async create(bike: Bike): Promise<Boolean> {
+	async create(bike: Bike): Promise<Bike> {
 		const newBike = await prisma.bike.create({ data: bike })
-
-		if (newBike) return true
-
-		return false
+		await prisma.$transaction
+		return newBike
 	}
 
 	async delete(id: number): Promise<Boolean> {
@@ -29,6 +26,7 @@ export class MySqlBikeRepo implements BikeRepo {
 
 	async update(id: number, bike: Bike): Promise<Boolean> {
 		const updated = await prisma.bike.update({ where: { id: id }, data: bike })
+		await prisma.$transaction
 		if (updated) return true
 		return false
 	}
