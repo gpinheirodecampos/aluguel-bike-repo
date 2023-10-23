@@ -26,7 +26,7 @@ model Bike {
   rate        Int
   description String
   ratings     Int
-  avaible     Boolean? @default(true)
+  available   Boolean? @default(true)
   latitude    Float
   longitude   Float
   imageUrl    Imagem[]
